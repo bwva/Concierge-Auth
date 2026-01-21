@@ -1,0 +1,51 @@
+# Perl build artifacts
+blib/
+inc/
+Makefile
+Makefile.old
+MANIFEST
+MANIFEST.bak
+_pm_to_blib
+*.bs
+
+# Module::Build
+Build
+Build.bat
+_build/
+
+# CPAN tester
+cover_db/
+*.tar.gz
+*.tgz
+
+::Makefile
+!Makefile.PL
+
+# Editor and temp files
+.*.sw[a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+.\#*
+\#*\#
+
+# Mac OS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Test files
+.devel-cover
+nytprof.out
+*.nytprof.out
+
+# Carton / cpanminus
+.local/
+carton/
+cpanfile.snapshot
+
+# Misc
+*.bak
+*.tmp
+*.old
