@@ -8,7 +8,7 @@ WriteMakefile(
     AUTHOR           => 'Bruce Van Allen <bva@cruzio.com>',
     ABSTRACT         => 'Concierge authorization using Crypt::Passphrase',
     LICENSE          => 'artistic_2',
-    MIN_PERL_VERSION => '5.40',
+    MIN_PERL_VERSION => '5.36',
     INSTALL_BASE     => undef,
 
     PREREQ_PM => {
