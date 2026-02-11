@@ -51,7 +51,7 @@ sub gen_uuid {
     }
     carp "gen_uuid: uuidgen command failed, falling back to random string";
     my $pseudo_uuid	= gen_random_token(36); # Fallback: UUID-like random token
-    return return g_success($pseudo_uuid, "Random string substituted for UUID.");
+    return g_success($pseudo_uuid, "Random string substituted for UUID.");
 }
 
 ## gen_token: deprecated alias for gen_random_token

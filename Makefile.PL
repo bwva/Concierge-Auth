@@ -32,6 +32,20 @@ WriteMakefile(
         'lib/Concierge/Auth/Generators.pm'   => '$(INST_LIB)/Concierge/Auth/Generators.pm',
     },
 
+    META_MERGE => {
+        'meta-spec' => { version => 2 },
+        resources   => {
+            repository => {
+                type => 'git',
+                url  => 'https://github.com/bwva/Concierge-Auth.git',
+                web  => 'https://github.com/bwva/Concierge-Auth',
+            },
+            bugtracker => {
+                web => 'https://github.com/bwva/Concierge-Auth/issues',
+            },
+        },
+    },
+
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Concierge-Auth-*' },
 );
