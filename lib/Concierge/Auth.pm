@@ -479,3 +479,278 @@ sub gen_word_phrase {
 1;
 
 __END__
+
+=head1 NAME
+
+Concierge::Auth - Password authentication and token generation using Crypt::Passphrase
+
+=head1 VERSION
+
+v0.19.0
+
+=head1 SYNOPSIS
+
+    use Concierge::Auth;
+
+    # Initialize with a password file
+    my $auth = Concierge::Auth->new({ file => '/path/to/auth.pwd' });
+
+    # Or without a file (generators and utilities only)
+    my $auth = Concierge::Auth->new({ no_file => 1 });
+
+    # Register a new user
+    my ($ok, $msg) = $auth->setPwd('alice', 'secret123');
+
+    # Authenticate
+    my ($ok, $msg) = $auth->checkPwd('alice', 'secret123');
+
+    # Check if a user exists
+    my ($ok, $msg) = $auth->checkID('alice');
+
+    # Change password
+    my ($ok, $msg) = $auth->resetPwd('alice', 'newsecret456');
+
+    # Delete a user
+    my ($ok, $msg) = $auth->deleteID('alice');
+
+    # Generate tokens and random values
+    my ($uuid, $msg)   = $auth->gen_uuid();
+    my ($token, $msg)  = $auth->gen_random_token(32);
+    my ($string, $msg) = $auth->gen_random_string(16);
+    my ($phrase, $msg) = $auth->gen_word_phrase(4, 4, 7, '-');
+
+=head1 DESCRIPTION
+
+Concierge::Auth provides password authentication backed by
+L<Crypt::Passphrase> with Argon2 encoding and Bcrypt validation for
+legacy password migration. Passwords are stored in a tab-separated file
+with file-locking for concurrent access.
+
+The module also provides token and random value generation via its parent
+class L<Concierge::Auth::Generators>, which uses L<Crypt::PRNG> for
+cryptographically secure random output.
+
+Concierge::Auth is the authentication component of the Concierge suite,
+alongside L<Concierge::Sessions> (session management) and
+L<Concierge::Users> (user data storage). It can also be used standalone.
+
+=head2 Return Convention
+
+After construction, methods never C<croak>. All checking and mutation
+methods return a boolean/message pair that adapts to calling context:
+
+    # Scalar context -- boolean only
+    if ($auth->checkPwd($id, $password)) { ... }
+
+    # List context -- boolean + message
+    my ($ok, $msg) = $auth->checkPwd($id, $password);
+
+Success returns are produced by the internal C<confirm()> helper;
+failures by C<reject()>. The general-purpose C<reply($bool, $msg)>
+helper is used when the outcome is computed at runtime.
+
+=head2 Password Security
+
+=over 4
+
+=item * B<Encoder>: Argon2 (memory-hard, resistant to GPU/ASIC attacks)
+
+=item * B<Validator>: Bcrypt (accepts legacy hashes, re-hashes on next setPwd/resetPwd)
+
+=item * B<Password length>: 8-72 characters (Bcrypt upper limit)
+
+=item * B<User ID>: 2-32 characters, alphanumeric plus C<.>, C<_>, C<@>, C<->
+
+=back
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+    my $auth = Concierge::Auth->new(\%args);
+
+Creates a new Auth object. The Crypt::Passphrase encoder (Argon2) is
+initialized immediately.
+
+B<Arguments:>
+
+=over 4
+
+=item C<file> -- path to the password file. Created if it does not
+exist. File permissions are set to C<0600>. Croaks if the file cannot
+be opened or created.
+
+=item C<no_file> -- if true, skip file setup. The object can still
+generate tokens and hash passwords, but cannot perform ID or password
+checks.
+
+=back
+
+If neither C<file> nor C<no_file> is provided, the object is still
+created (with a warning), but file-dependent methods will fail.
+
+=head1 METHODS
+
+=head2 Authentication
+
+=head3 checkID
+
+    my ($ok, $msg) = $auth->checkID($user_id);
+
+Returns true if C<$user_id> has a record in the password file.
+
+=head3 checkPwd
+
+    my ($ok, $msg) = $auth->checkPwd($user_id, $password);
+
+Returns true if C<$password> matches the stored hash for C<$user_id>.
+
+=head3 setPwd
+
+    my ($ok, $msg) = $auth->setPwd($user_id, $password);
+
+Creates a new password record for C<$user_id>. Fails if the ID already
+exists (use C<resetPwd> to change an existing password).
+
+Returns the user ID as the message on success.
+
+=head3 resetPwd
+
+    my ($ok, $msg) = $auth->resetPwd($user_id, $new_password);
+
+Replaces the stored password hash for an existing C<$user_id>. Fails
+if the ID is not found.
+
+Returns the user ID as the message on success.
+
+=head3 deleteID
+
+    my ($ok, $msg) = $auth->deleteID($user_id);
+
+Removes the password record for C<$user_id>. Fails if the ID is not
+found.
+
+=head2 Validation
+
+=head3 validateID
+
+    my ($ok, $msg) = $auth->validateID($user_id);
+
+Checks whether C<$user_id> meets the length and character constraints.
+Does not check the password file.
+
+=head3 validatePwd
+
+    my ($ok, $msg) = $auth->validatePwd($password);
+
+Checks whether C<$password> meets the length constraints.
+
+=head3 validateFile
+
+    my ($ok, $msg) = $auth->validateFile($file);
+
+Returns true if C<$file> (or the object's configured file) exists and
+is readable.
+
+=head2 File Management
+
+=head3 setFile
+
+    my ($ok, $msg) = $auth->setFile($path);
+
+Sets (or changes) the password file path. Creates the file if it does
+not exist and sets permissions to C<0600>.
+
+=head3 rmFile
+
+    my ($file, $msg) = $auth->rmFile();
+
+Deletes the password file and clears the stored path. In list context,
+returns the deleted file path on success.
+
+=head3 clearFile
+
+    my ($ok, $msg) = $auth->clearFile();
+
+Removes and re-creates the password file, effectively deleting all
+records.
+
+=head3 pfile
+
+    my ($file, $msg) = $auth->pfile();
+
+Returns the path to the configured password file.
+
+=head2 Utilities
+
+=head3 encryptPwd
+
+    my $hash = $auth->encryptPwd($password);
+
+Returns the Argon2 hash of C<$password>. Validates password constraints
+first.
+
+=head2 Token and Value Generation
+
+These methods wrap the functions in L<Concierge::Auth::Generators> and
+return results using the Auth reply convention: C<($value, $message)> in
+list context, C<$value> in scalar context.
+
+=head3 gen_uuid
+
+    my ($uuid, $msg) = $auth->gen_uuid();
+
+Generates a UUID via the system C<uuidgen> command. Falls back to a
+random token if C<uuidgen> is unavailable.
+
+=head3 gen_random_token
+
+    my ($token, $msg) = $auth->gen_random_token($length);
+
+Generates a cryptographically secure alphanumeric token. Default length
+is 13.
+
+=head3 gen_crypt_token
+
+    my ($token, $msg) = $auth->gen_crypt_token();
+
+Generates an 11-character token using C<crypt()>.
+
+=head3 gen_random_string
+
+    my ($string, $msg) = $auth->gen_random_string($length, $charset);
+
+Generates a random string of C<$length> characters from C<$charset>.
+Uses alphanumeric characters if C<$charset> is omitted.
+
+=head3 gen_word_phrase
+
+    my ($phrase, $msg) = $auth->gen_word_phrase($num_words, $min, $max, $sep);
+
+Generates a multi-word passphrase from dictionary words (or random
+fallback strings). Defaults: 4 words, 4-7 characters each, no
+separator.
+
+=head3 gen_token
+
+Deprecated alias for C<gen_random_token>.
+
+=head1 SEE ALSO
+
+L<Concierge::Auth::Generators> -- functional interface to the generators
+
+L<Concierge::Sessions>, L<Concierge::Users> -- companion Concierge
+components
+
+L<Crypt::Passphrase>, L<Crypt::PRNG>
+
+=head1 AUTHOR
+
+Bruce Van Allen <bva@cruzio.com>
+
+=head1 LICENSE
+
+This module is free software; you can redistribute it and/or modify it
+under the terms of the Artistic License 2.0.
+
+=cut

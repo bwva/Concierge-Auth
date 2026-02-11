@@ -3,12 +3,12 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME             => 'Concierge-Auth',
+    NAME             => 'Concierge::Auth',
     VERSION_FROM     => 'lib/Concierge/Auth.pm',
     AUTHOR           => 'Bruce Van Allen <bva@cruzio.com>',
-    ABSTRACT         => 'Concierge authorization using Crypt::Passphrase',
+    ABSTRACT         => 'Password authentication and token generation using Crypt::Passphrase',
     LICENSE          => 'artistic_2',
-    MIN_PERL_VERSION => '5.36',
+    MIN_PERL_VERSION => '5.036',
     INSTALL_BASE     => undef,
 
     PREREQ_PM => {

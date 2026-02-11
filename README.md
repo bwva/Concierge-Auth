@@ -102,6 +102,13 @@ Concierge-Auth/
 │   ├── 10-architecture-comparison.pl
 │   └── README.md
 ├── t/                      # Test suite
+│   ├── 00-load.t
+│   ├── 01-constructor.t
+│   ├── 02-validation.t
+│   ├── 03-auth.t
+│   └── 04-file-management.t
+├── Changes                # Revision history
+├── MANIFEST               # Distribution file list
 ├── Makefile.PL            # CPAN installation script
 └── README.md              # This file
 ```
@@ -128,7 +135,7 @@ This workflow lets you:
 
 ## REQUIREMENTS
 
-- Perl 5.40 or higher
+- Perl 5.36 or higher
 - Carp
 - Fcntl
 - Crypt::Passphrase
@@ -192,7 +199,7 @@ Concierge::Auth follows a service layer pattern:
 - **Graceful Degradation**: Falls back to alternative methods when possible
 
 The module uses modern Perl practices:
-- v5.40+ syntax
+- v5.36+ syntax
 - Type validation
 - Consistent error handling
 - Clear separation of concerns
