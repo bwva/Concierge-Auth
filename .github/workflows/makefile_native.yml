@@ -27,8 +27,13 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
+    - name: Clear runner temp
+      run: rm -rf /home/runner/work/_temp/*
+
     - name: Set up perl
-      uses: shogo82148/actions-setup-perl@v1
+      uses: shogo82148/actions-setup-perl@v1.34.2  # Pin to a specific stable version
+      env:
+        ACTIONS_ARTIFACT_VERIFICATION: false
       with:
           perl-version: ${{ matrix.perl }}
           distribution: ${{ ( startsWith( matrix.runner, 'windows-' ) && 'strawberry' ) || 'default' }}
