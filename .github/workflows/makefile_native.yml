@@ -25,7 +25,7 @@ jobs:
     name: OS ${{matrix.runner}} Perl ${{matrix.perl}}
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
 
     - name: Set up perl
       uses: shogo82148/actions-setup-perl@v1
@@ -35,8 +35,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-          cpanm --notest Module::Install --version
-          cpanm --installdeps --notest --version .
+          cpanm --installdeps --notest .
 
     - name: Run Tests on Linux and macOS
       if: ${{ matrix.runner != 'windows-latest' }}
