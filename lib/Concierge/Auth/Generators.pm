@@ -142,7 +142,7 @@ sub gen_word_phrase {
         close $wfh;
     }
     else {
-        carp "gen_word_phrase: Cannot open word file ($word_file), using fallback";
+        # carp "gen_word_phrase: Cannot open word file ($word_file), using fallback";
         $used_fallback = 1;
 
         # Fallback: generate random "words"

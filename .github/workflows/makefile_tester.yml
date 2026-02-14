@@ -15,9 +15,9 @@ jobs:
       matrix:
         perl-version:
 #          - '5.8'
-#          - '5.30'
+          - '5.36'
           - '5.42'
-#          - 'latest'
+          - 'latest'
     container:
       image: perldocker/perl-tester:${{ matrix.perl-version }}     # https://hub.docker.com/r/perldocker/perl-tester
     name: Perl ${{ matrix.perl-version }}
