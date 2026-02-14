@@ -4,7 +4,7 @@ Concierge authorization using Crypt::Passphrase - a production-ready authenticat
 
 ## VERSION
 
-v0.19.0
+v0.3.2
 
 ## DESCRIPTION
 

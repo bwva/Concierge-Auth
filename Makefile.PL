@@ -14,7 +14,9 @@ WriteMakefile(
     PREREQ_PM => {
         'Carp'             => 0,
         'Fcntl'            => 0,
-        'Crypt::Passphrase' => 0,
+        'Crypt::Passphrase'          => 0,
+        'Crypt::Passphrase::Argon2'  => 0,
+        'Crypt::Passphrase::Bcrypt'  => 0,
         'Crypt::PRNG'      => 0,
         'Time::HiRes'      => 0,
         'parent'           => 0,
