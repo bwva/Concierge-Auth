@@ -1,54 +1,29 @@
 # Perl build artifacts
 blib/
-inc/
 Makefile
 Makefile.old
-MANIFEST
-MANIFEST.bak
-_pm_to_blib
-pm_to_blib
 MYMETA.json
 MYMETA.yml
-*.bs
+META.json
+META.yml
+pm_to_blib
 
-# Module::Build
-Build
-Build.bat
-_build/
-
-# CPAN tester
-cover_db/
+# Distribution tarballs
 *.tar.gz
-*.tgz
 
-::Makefile
-!Makefile.PL
+# macOS
+.DS_Store
 
 # Editor and temp files
-.*.sw[a-z]
-*.un~
-Session.vim
-.netrwhist
+*.swp
+*.swo
 *~
-.\#*
-\#*\#
-
-# Mac OS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Test files
-.devel-cover
-nytprof.out
-*.nytprof.out
-
-# Carton / cpanminus
-.local/
-carton/
-cpanfile.snapshot
-
-# Misc
 *.bak
+*.backup
 *.tmp
-*.old
+
+# Test coverage
+cover_db/
+
+# Backup files
+MANIFEST.bak
