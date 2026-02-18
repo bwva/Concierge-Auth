@@ -444,10 +444,12 @@ sub gen_random_id {
 		: reject("gen_random_id: Failed to generate random ID");
 }
 
+# Deprecated
 sub gen_token {
 	goto &gen_random_token;
 }
 
+# Deprecated
 sub gen_crypt_token {
 	goto &gen_random_token;
 }
