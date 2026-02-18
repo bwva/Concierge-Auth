@@ -1,4 +1,4 @@
-package Concierge::Auth::Generators v0.4.1;
+package Concierge::Auth::Generators v0.4.2;
 use v5.36;
 
 # ABSTRACT: Value generation utilities for Concierge::Auth
@@ -91,6 +91,7 @@ sub gen_crypt_token {
 }
 
 ## gen_random_string: generate random string from optional charset
+## uses random_string() and random_string_from() from Crypt::PRNG
 ## Parameters: length, charset (optional)
 ## If charset provided and not empty, uses random_string_from
 ## Otherwise uses alphanumeric charset
