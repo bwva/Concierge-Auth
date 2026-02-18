@@ -1,5 +1,9 @@
 Revision history for Concierge-Auth
 
+v0.4.1  2026-02-17
+    - Deprecated gen_crypt_token (now aliases gen_random_token)
+    - crypt() is non-portable; returned undef on some CPAN tester platforms
+
 v0.4.0  2026-02-15
     - Fixed distribution issue with MANIFEST.SKIP
 

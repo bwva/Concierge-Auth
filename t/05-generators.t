@@ -69,11 +69,11 @@ subtest 'gen_random_token - functional' => sub {
     isnt(gen_random_token(), gen_random_token(), 'successive tokens differ');
 };
 
-subtest 'gen_crypt_token - functional' => sub {
+subtest 'gen_crypt_token - functional (deprecated, aliases gen_random_token)' => sub {
     my ($token, $msg) = gen_crypt_token();
     ok(defined $token, 'returns a value');
-    ok(length($token) > 0, 'non-empty token');
-    like($msg, qr/Crypt token/, 'message mentions crypt token');
+    is(length($token), 13, 'default length matches gen_random_token');
+    like($msg, qr/Random token/, 'message from gen_random_token');
 };
 
 subtest 'gen_random_string - functional' => sub {
@@ -129,9 +129,10 @@ subtest 'gen_random_token - OO' => sub {
     is(length($ok), 24, 'length matches request');
 };
 
-subtest 'gen_crypt_token - OO' => sub {
+subtest 'gen_crypt_token - OO (deprecated, aliases gen_random_token)' => sub {
     my ($ok, $msg) = $auth->gen_crypt_token();
     ok($ok, 'returns truthy');
+    is(length($ok), 13, 'default length matches gen_random_token');
 };
 
 subtest 'gen_random_string - OO' => sub {

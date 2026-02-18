@@ -26,9 +26,9 @@ my $FIELD_SEPARATOR		= "\t";
 ## no_file => 1 is provided, but still instantiates
 ## the auth object; without a passwd file, the auth object
 ## can only provide the utility methods:
-## encryptPwd(), gen_crypt_token(), gen_random_string(),
-## gen_word_phrase(), gen_random_string(), gen_uuid,
-## gen_token()<- deprecated
+## encryptPwd(), gen_random_token(), gen_random_string(),
+## gen_word_phrase(), gen_uuid(),
+## gen_crypt_token()<- deprecated, gen_token()<- deprecated
 ## A file may be designated after instantiation with
 ## the method setFile().
 ## Dies if it can't open/create a designated file.
@@ -450,12 +450,7 @@ sub gen_token {
 }
 
 sub gen_crypt_token {
-	my $self = shift;
-	my ($token, $msg) = Concierge::Auth::Generators::gen_crypt_token(@_);
-
-	return defined $token
-		? reply($token, $msg)
-		: reject("gen_crypt_token: Failed to generate crypt token");
+	goto &gen_random_token;
 }
 
 sub gen_random_token {
@@ -732,9 +727,8 @@ is 13.
 
 =head3 gen_crypt_token
 
-    my ($token, $msg) = $auth->gen_crypt_token();
-
-Generates an 11-character token using C<crypt()>.
+Deprecated alias for C<gen_random_token()>. Previously used C<crypt()>,
+which is unavailable or non-portable on some platforms.
 
 =head3 gen_random_string
 

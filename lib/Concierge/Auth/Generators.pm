@@ -1,4 +1,4 @@
-package Concierge::Auth::Generators v0.4.0;
+package Concierge::Auth::Generators v0.4.1;
 use v5.36;
 
 # ABSTRACT: Value generation utilities for Concierge::Auth
@@ -85,16 +85,9 @@ sub gen_random_token {
     return g_success($token, "Random token generated ($length chars).");
 }
 
-## gen_crypt_token: generate a crypt-based token
-## Returns: 11-character token string
+## gen_crypt_token: deprecated, now an alias for gen_random_token
 sub gen_crypt_token {
-    my @chars = ('a'..'z', 'A'..'Z', '0'..'9');
-    my $token = crypt(
-        substr(gettimeofday(), -8),
-         join('', => @chars[rand 62, rand 62])
-    );
-    $token =~ tr{./:-}{ZAjQ};
-    return g_success($token, "Crypt token generated.");
+    goto &gen_random_token;
 }
 
 ## gen_random_string: generate random string from optional charset
@@ -259,13 +252,12 @@ Parameters:
 
 =head2 gen_crypt_token()
 
-Generates an 11-character token using crypt().
-
-    my $token = gen_crypt_token();  # e.g., "ZAjQ3xY2zA9b"
+Deprecated alias for C<gen_random_token()>. Previously used C<crypt()>,
+which is unavailable or non-portable on some platforms.
 
 =head2 gen_token()
 
-Deprecated alias for gen_random_token().
+Deprecated alias for C<gen_random_token()>.
 
 =head1 ERROR HANDLING
 
