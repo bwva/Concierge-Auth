@@ -1,5 +1,8 @@
 Revision history for Concierge-Auth
 
+v0.4.3  2026-02-17
+    - Version Bump for CPAN
+
 v0.4.2  2026-02-17
     - Further deprecation steps for gen_token and gen_crypt_token
 
