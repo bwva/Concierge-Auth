@@ -1,6 +1,14 @@
 Revision history for Concierge-Auth
 
 v0.4.2  2026-02-17
+    - Further deprecation steps for gen_token and gen_crypt_token
+
+v0.4.3  2026-02-17
+    - Removed gen_crypt_token and gen_token from exports, tests, and documentation
+    - Removed unused Time::HiRes import from Generators.pm
+    - Deprecated subs remain as internal aliases (will be removed in a future release)
+
+v0.4.2  2026-02-17
     - Fixed documentation referring to gen_crypt_token deprecation
 
 v0.4.1  2026-02-17

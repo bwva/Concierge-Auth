@@ -27,8 +27,7 @@ my $FIELD_SEPARATOR		= "\t";
 ## the auth object; without a passwd file, the auth object
 ## can only provide the utility methods:
 ## encryptPwd(), gen_random_token(), gen_random_string(),
-## gen_word_phrase(), gen_uuid(),
-## gen_crypt_token()<- deprecated, gen_token()<- deprecated
+## gen_word_phrase(), gen_uuid()
 ## A file may be designated after instantiation with
 ## the method setFile().
 ## Dies if it can't open/create a designated file.
@@ -725,11 +724,6 @@ required.
 Generates a cryptographically secure alphanumeric token. Default length
 is 13.
 
-=head3 gen_crypt_token
-
-Deprecated alias for C<gen_random_token()>. Previously used C<crypt()>,
-which is unavailable or non-portable on some platforms.
-
 =head3 gen_random_string
 
     my ($string, $msg) = $auth->gen_random_string($length, $charset);
@@ -744,10 +738,6 @@ Uses alphanumeric characters if C<$charset> is omitted.
 Generates a multi-word passphrase from dictionary words (or random
 fallback strings). Defaults: 4 words, 4-7 characters each, no
 separator.
-
-=head3 gen_token
-
-Deprecated alias for C<gen_random_token>.
 
 =head1 SEE ALSO
 
