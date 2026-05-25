@@ -47,11 +47,11 @@ WriteMakefile(
         provides => {
             'Concierge::Auth' => {
                 file    => 'lib/Concierge/Auth.pm',
-                version => 'v0.4.4',
+                version => 'v0.4.5',
             },
             'Concierge::Auth::Generators' => {
                 file    => 'lib/Concierge/Auth/Generators.pm',
-                version => 'v0.4.4',
+                version => 'v0.4.5',
             },
         },
     },
