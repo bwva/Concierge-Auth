@@ -1,4 +1,4 @@
-package Concierge::Auth::Generators v0.4.3;
+package Concierge::Auth::Generators v0.4.4;
 use v5.36;
 
 # ABSTRACT: Value generation utilities for Concierge::Auth
