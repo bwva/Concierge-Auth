@@ -198,6 +198,7 @@ subtest 'encryptPwd - invalid password rejected' => sub {
 subtest 'checkID - no file configured' => sub {
     my $nf;
     my $w = warnings { $nf = Concierge::Auth->new({ no_file => 1 }) };
+    like( $w->[0], qr/Utilities only/i, 'constructor warns when no_file' );
     my ($ok, $msg) = $nf->checkID('alice');
     ok( !$ok, 'checkID fails when no file is set' );
     like( $msg, qr/No auth file/i, 'message mentions no auth file' );
@@ -206,13 +207,16 @@ subtest 'checkID - no file configured' => sub {
 subtest 'checkPwd - no file configured' => sub {
     my $nf;
     my $w = warnings { $nf = Concierge::Auth->new({ no_file => 1 }) };
-    my ($ok, $msg) = $nf->checkPwd('alice', 'password123');
+    like( $w->[0], qr/Utilities only/i, 'constructor warns when no_file' );
+    my ($ok, $msg);
+    my $pw = warnings { ($ok, $msg) = $nf->checkPwd('alice', 'password123') };
     ok( !$ok, 'checkPwd fails when no file is set' );
 };
 
 subtest 'deleteID - no file configured' => sub {
     my $nf;
     my $w = warnings { $nf = Concierge::Auth->new({ no_file => 1 }) };
+    like( $w->[0], qr/Utilities only/i, 'constructor warns when no_file' );
     my ($ok, $msg) = $nf->deleteID('alice');
     ok( !$ok, 'deleteID fails when no file is set' );
 };
@@ -220,6 +224,7 @@ subtest 'deleteID - no file configured' => sub {
 subtest 'resetPwd - no file configured' => sub {
     my $nf;
     my $w = warnings { $nf = Concierge::Auth->new({ no_file => 1 }) };
+    like( $w->[0], qr/Utilities only/i, 'constructor warns when no_file' );
     my ($ok, $msg) = $nf->resetPwd('alice', 'password123');
     ok( !$ok, 'resetPwd fails when no file is set' );
     like( $msg, qr/Not OK/i, 'message reflects file validation failure' );
