@@ -3,6 +3,8 @@ use v5.36;
 
 # ABSTRACT: Base class / contract for Concierge::Auth backends
 
+use Concierge::Auth::Generators ();
+
 # Define interface methods that must be implemented by subclasses
 sub new { die "Subclass must implement new" }
 sub authenticate { die "Subclass must implement authenticate" }
@@ -10,6 +12,22 @@ sub is_id_known { die "Subclass must implement is_id_known" }
 sub enroll { die "Subclass must implement enroll" }
 sub change_credentials { die "Subclass must implement change_credentials" }
 sub revoke { die "Subclass must implement revoke" }
+
+# Generator methods -- default implementations delegate to the plain
+# functions in Concierge::Auth::Generators, preserving its wantarray
+# (value)/(value, message) dual-return convention. Unlike the five
+# methods above, these are NOT required overrides: a backend that has
+# no reason to customize ID/token generation gets a working
+# implementation for free. Any backend may still override one or more
+# of these with its own logic (e.g. an LDAP backend deferring ID
+# generation to the directory).
+sub gen_uuid          { my $self = shift; return Concierge::Auth::Generators::gen_uuid(@_); }
+sub gen_random_id     { my $self = shift; return Concierge::Auth::Generators::gen_random_id(@_); }
+sub gen_random_token  { my $self = shift; return Concierge::Auth::Generators::gen_random_token(@_); }
+sub gen_random_string { my $self = shift; return Concierge::Auth::Generators::gen_random_string(@_); }
+sub gen_word_phrase   { my $self = shift; return Concierge::Auth::Generators::gen_word_phrase(@_); }
+sub gen_token         { my $self = shift; return Concierge::Auth::Generators::gen_token(@_); }
+sub gen_crypt_token   { my $self = shift; return Concierge::Auth::Generators::gen_crypt_token(@_); }
 
 1;
 
@@ -78,13 +96,22 @@ visitors and guests (see C<admit_visitor>/C<checkin_guest> in
 L<Concierge>) are never authenticated -- they are simply assigned a
 generated identifier for cookie/session purposes, with no credential
 involved at all. That capability (C<gen_uuid>, C<gen_random_id>,
-C<gen_random_token>, C<gen_random_string>, C<gen_word_phrase>) is
-therefore independent of the five-method contract above, but every
-conforming backend -- not just C<Concierge::Auth::Pwd> -- must still
-expose it, since C<Concierge> calls it on whatever backend is
-configured. Backends satisfy this by inheriting from
-L<Concierge::Auth::Generators>, by composing it, or by implementing
-equivalent methods.
+C<gen_random_token>, C<gen_random_string>, C<gen_word_phrase>, and the
+deprecated aliases C<gen_token>/C<gen_crypt_token>) is therefore
+independent of the five-method contract above.
+
+Unlike the five required methods, this guarantee is satisfied with a
+working I<default> rather than a die-stub: C<Concierge::Auth::Base>
+itself implements each of these methods by delegating to the plain
+functions of the same name in L<Concierge::Auth::Generators>. Every
+backend that inherits from this class -- including
+C<Concierge::Auth::Pwd> -- gets them for free and does not need to
+implement or compose anything to satisfy this guarantee. A backend is
+still free to override any one (or all) of these methods with its own
+logic (for example, an LDAP backend that wants directory-issued
+identifiers instead of locally-generated ones); Perl's normal method
+resolution means an override in the subclass simply takes precedence
+over the default here.
 
 =head1 REQUIRED METHODS
 
@@ -184,9 +211,43 @@ Or on failure:
 
     { success => 0, message => "Error description" }
 
+=head1 GENERATOR METHODS
+
+Backend implementations inherit working defaults for the following
+methods and are not required to override them -- see L</The Generators
+Guarantee> above. Each delegates to the identically-named function in
+L<Concierge::Auth::Generators> and preserves its C<wantarray>
+C<(value)>/C<(value, message)> dual-return convention, which is
+distinct from the C<{ success =E<gt> ... }> hashref convention used by
+the five required methods above.
+
+=head2 gen_uuid
+
+=head2 gen_random_id
+
+=head2 gen_random_token
+
+=head2 gen_random_string
+
+=head2 gen_word_phrase
+
+=head2 gen_token
+
+Deprecated alias for L</gen_random_token>.
+
+=head2 gen_crypt_token
+
+Deprecated alias for L</gen_random_token>.
+
+See L<Concierge::Auth::Generators> for the parameters and return value
+of each.
+
 =head1 SEE ALSO
 
 L<Concierge::Auth::Pwd> - built-in password-file backend implementation
+
+L<Concierge::Auth::Generators> - functional interface this class's
+default generator methods delegate to
 
 L<Concierge::Auth> - Auth manager / facade
 

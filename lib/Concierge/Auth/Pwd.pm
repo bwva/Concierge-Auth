@@ -6,7 +6,7 @@ use v5.36;
 use Carp			qw/carp croak/;
 use Fcntl			qw/:flock/;
 use Crypt::Passphrase;
-use parent			qw/Concierge::Auth::Base Concierge::Auth::Generators/;
+use parent			qw/Concierge::Auth::Base/;
 
 ## Constants for validation
 use constant {
@@ -422,64 +422,11 @@ sub pfile {
 		: reject( "No auth file" );
 }
 
-## Generator method wrappers
-## These methods wrap the plain subroutines from Concierge::Auth::Generators
-## and return results using Auth.pm's reply response pattern
-
-sub gen_uuid {
-	my $self = shift;
-	my ($uuid, $msg) = Concierge::Auth::Generators::gen_uuid(@_);
-
-	return defined $uuid
-		? reply($uuid, $msg)
-		: reject("gen_uuid: Failed to generate UUID");
-}
-
-sub gen_random_id {
-	my $self = shift;
-	my ($id, $msg) = Concierge::Auth::Generators::gen_random_id(@_);
-
-	return defined $id
-		? reply($id, $msg)
-		: reject("gen_random_id: Failed to generate random ID");
-}
-
-# Deprecated
-sub gen_token {
-	goto &gen_random_token;
-}
-
-# Deprecated
-sub gen_crypt_token {
-	goto &gen_random_token;
-}
-
-sub gen_random_token {
-	my $self = shift;
-	my ($token, $msg) = Concierge::Auth::Generators::gen_random_token(@_);
-
-	return defined $token
-		? reply($token, $msg)
-		: reject("gen_random_token: Failed to generate random token");
-}
-
-sub gen_random_string {
-	my $self = shift;
-	my ($string, $msg) = Concierge::Auth::Generators::gen_random_string(@_);
-
-	return defined $string
-		? reply($string, $msg)
-		: reject("gen_random_string: Failed to generate random string");
-}
-
-sub gen_word_phrase {
-	my $self = shift;
-	my ($phrase, $msg) = Concierge::Auth::Generators::gen_word_phrase(@_);
-
-	return defined $phrase
-		? reply($phrase, $msg)
-		: reject("gen_word_phrase: Failed to generate word phrase");
-}
+# Generator methods (gen_uuid, gen_random_id, gen_random_token,
+# gen_random_string, gen_word_phrase, gen_token, gen_crypt_token) are
+# NOT defined here -- they are inherited as working defaults from
+# Concierge::Auth::Base, which delegates to Concierge::Auth::Generators.
+# See L<Concierge::Auth::Base/The Generators Guarantee>.
 
 1;
 
@@ -516,7 +463,7 @@ v0.5.0
     my ($ok, $msg) = $auth->setFile('/path/to/other.pwd');
     my $hash        = $auth->encryptPwd('secret123');
 
-    # Generate tokens and random values
+    # Generate tokens and random values (inherited from Concierge::Auth::Base)
     my ($uuid, $msg)   = $auth->gen_uuid();           # v4 UUID
     my ($id, $msg)     = $auth->gen_random_id();       # 40-char hex ID
     my ($token, $msg)  = $auth->gen_random_token(32);
@@ -533,9 +480,13 @@ with Argon2 encoding and Bcrypt validation for legacy password
 migration. Passwords are stored in a tab-separated file with
 file-locking for concurrent access.
 
-The module also provides token and random value generation via its
-parent class L<Concierge::Auth::Generators>, which uses L<Crypt::PRNG>
-for cryptographically secure random output.
+Token and random value generation (C<gen_uuid>, C<gen_random_id>,
+C<gen_random_token>, C<gen_random_string>, C<gen_word_phrase>) is not
+implemented by this module -- it is inherited from
+L<Concierge::Auth::Base>'s default implementations, which delegate to
+L<Concierge::Auth::Generators> (using L<Crypt::PRNG> for
+cryptographically secure random output). See
+L<Concierge::Auth::Base/The Generators Guarantee>.
 
 Concierge::Auth::Pwd is one backend of the authentication component of
 the Concierge suite, alongside L<Concierge::Sessions> (session
@@ -544,7 +495,7 @@ used standalone.
 
 =head2 Two Method Layers
 
-This module exposes two layers of methods:
+This module itself defines two layers of methods:
 
 =over 4
 
@@ -560,16 +511,19 @@ of the Concierge suite. C<validatePwd> is kept as a small shared helper
 since both C<enroll> and C<change_credentials> need it; it also returns
 the hashref convention.
 
-=item * B<Backend-specific methods> (file-management, encryption, and
-generator methods) -- specific to how B<this> backend manages its
-password file, independent of the contract logic above. Other backends
-are not expected to implement these, and application code that wants to
-remain backend-agnostic should prefer the contract methods. These retain
-the original wantarray-sensitive C<(bool, message)> dual-return
-convention: C<$value> in scalar context, C<($value, $message)> in list
-context.
+=item * B<Backend-specific methods> (file-management and encryption) --
+specific to how B<this> backend manages its password file, independent
+of the contract logic above. Other backends are not expected to
+implement these, and application code that wants to remain
+backend-agnostic should prefer the contract methods. These retain the
+original wantarray-sensitive C<(bool, message)> dual-return convention:
+C<$value> in scalar context, C<($value, $message)> in list context.
 
 =back
+
+A third set of methods -- token/random value generation -- is
+available on every instance but is not defined in this module at all;
+see L</DESCRIPTION> above.
 
 =head1 CONSTRUCTOR
 
@@ -708,48 +662,15 @@ first.
 
 =head2 Token and Value Generation
 
-These methods wrap the functions in L<Concierge::Auth::Generators> and
-return results using the dual-return convention: C<($value, $message)>
-in list context, C<$value> in scalar context.
-
-=head3 gen_uuid
-
-    my ($uuid, $msg) = $auth->gen_uuid();
-
-Generates a version 4 (random) UUID using C<Crypt::PRNG::random_bytes>.
-No external commands are used.
-
-=head3 gen_random_id
-
-    my ($id, $msg) = $auth->gen_random_id();       # 20 bytes / 40 hex chars
-    my ($id, $msg) = $auth->gen_random_id(32);      # 32 bytes / 64 hex chars
-
-Generates a hex-encoded random ID from cryptographic random bytes.
-Default is 20 bytes (40 hex characters, 160 bits). Suitable for session
-IDs, API keys, and other security tokens where UUID format is not
-required.
-
-=head3 gen_random_token
-
-    my ($token, $msg) = $auth->gen_random_token($length);
-
-Generates a cryptographically secure alphanumeric token. Default length
-is 13.
-
-=head3 gen_random_string
-
-    my ($string, $msg) = $auth->gen_random_string($length, $charset);
-
-Generates a random string of C<$length> characters from C<$charset>.
-Uses alphanumeric characters if C<$charset> is omitted.
-
-=head3 gen_word_phrase
-
-    my ($phrase, $msg) = $auth->gen_word_phrase($num_words, $min, $max, $sep);
-
-Generates a multi-word passphrase from dictionary words (or random
-fallback strings). Defaults: 4 words, 4-7 characters each, no
-separator.
+C<gen_uuid>, C<gen_random_id>, C<gen_random_token>, C<gen_random_string>,
+and C<gen_word_phrase> are available on every instance but are not
+implemented in this module -- they are inherited default
+implementations from L<Concierge::Auth::Base>, which delegate to
+L<Concierge::Auth::Generators> and use its dual-return convention:
+C<($value, $message)> in list context, C<$value> in scalar context.
+See L<Concierge::Auth::Base/GENERATOR METHODS> for the full list and
+L<Concierge::Auth::Base/The Generators Guarantee> for why this backend
+does not need to (but could) override them.
 
 =head1 SEE ALSO
 
