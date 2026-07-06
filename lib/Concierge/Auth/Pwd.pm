@@ -488,10 +488,10 @@ L<Concierge::Auth::Generators> (using L<Crypt::PRNG> for
 cryptographically secure random output). See
 L<Concierge::Auth::Base/The Generators Guarantee>.
 
-Concierge::Auth::Pwd is one backend of the authentication component of
-the Concierge suite, alongside L<Concierge::Sessions> (session
-management) and L<Concierge::Users> (user data storage). It can also be
-used standalone.
+Concierge::Auth::Pwd is one backend of L<Concierge::Auth>, 
+the authentication component of the Concierge suite, alongside 
+L<Concierge::Sessions> (session management) and L<Concierge::Users> 
+(user data storage). It can also be used standalone.
 
 =head2 Two Method Layers
 

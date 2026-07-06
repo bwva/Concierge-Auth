@@ -5,17 +5,22 @@ use v5.36;
 
 use Concierge::Auth::Generators ();
 
-# Define interface methods that must be implemented by subclasses
+# Define interface methods that must be implemented by subclasses:
 # Concierge::Auth::MyBackend->new(%args);
 sub new { die "Subclass must implement new" }
+
 # $backend->authenticate($user_id, $credential);
 sub authenticate { die "Subclass must implement authenticate" }
+
 # $backend->is_id_known($user_id);
 sub is_id_known { die "Subclass must implement is_id_known" }
+
 # $backend->enroll($user_id, $credential, \%opts);
 sub enroll { die "Subclass must implement enroll" }
+
 # $backend->change_credentials($user_id, $new_credential);
 sub change_credentials { die "Subclass must implement change_credentials" }
+
 # $backend->revoke($user_id);
 sub revoke { die "Subclass must implement revoke" }
 
@@ -32,8 +37,10 @@ sub gen_random_id     { my $self = shift; return Concierge::Auth::Generators::ge
 sub gen_random_token  { my $self = shift; return Concierge::Auth::Generators::gen_random_token(@_); }
 sub gen_random_string { my $self = shift; return Concierge::Auth::Generators::gen_random_string(@_); }
 sub gen_word_phrase   { my $self = shift; return Concierge::Auth::Generators::gen_word_phrase(@_); }
-sub gen_token         { my $self = shift; return Concierge::Auth::Generators::gen_token(@_); }
-sub gen_crypt_token   { my $self = shift; return Concierge::Auth::Generators::gen_crypt_token(@_); }
+# Does NOT call the original deprecated methods; calls their replacements
+# But these are still considered deprecated method names
+sub gen_token         { my $self = shift; return Concierge::Auth::Generators::gen_random_token(@_); }
+sub gen_crypt_token   { my $self = shift; return Concierge::Auth::Generators::gen_random_token(@_); }
 
 1;
 
