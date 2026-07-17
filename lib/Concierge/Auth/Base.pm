@@ -82,9 +82,9 @@ operations Concierge itself needs to perform -- "add a user," "change
 credentials," "is this ID known," "authenticate" -- rather than at the
 level of any one backend's natural storage primitives. The built-in
 password-file backend, for example, satisfies this contract internally
-using its own C<checkID>/C<setPwd>/C<resetPwd>/C<deleteID>/C<checkPwd>
-methods, but those are private implementation detail of that backend and
-are not part of this contract. A backend with a fundamentally different
+using its own file-locking, hashing, and response-formatting helpers, but
+those are private implementation detail of that backend and are not part
+of this contract. A backend with a fundamentally different
 storage/verification model (e.g. an LDAP directory) satisfies the same
 five methods however fits its model, without needing anything resembling
 those primitives at all.

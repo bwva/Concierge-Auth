@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-11-custom-backend-ldap.pl - Sketch of a minimal Concierge::Auth::LDAP backend
+1-custom-backend-ldap.pl - Sketch of a minimal Concierge::Auth::LDAP backend
 
 =head1 DESCRIPTION
 
