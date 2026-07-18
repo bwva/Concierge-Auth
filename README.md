@@ -1,6 +1,6 @@
 # Concierge::Auth
 
-Concierge authorization using Crypt::Passphrase - a production-ready authentication and authorization framework.
+Concierge authorization framework - production-ready authentication and authorization with substitutable backends.
 
 ## VERSION
 
@@ -8,16 +8,16 @@ v0.5.1
 
 ## DESCRIPTION
 
-Concierge::Auth provides comprehensive user authentication and authorization capabilities using Crypt::Passphrase for secure password management. It supports file-based user storage and token generation, and is designed for substitution with other backends (LDAP, OAuth, etc.) that satisfy the same contract.
+Concierge::Auth provides comprehensive user authentication and authorization capabilities through a substitutable backend architecture — any backend implementing the same contract (LDAP, OAuth, etc.) can be swapped in. Token generation is available independent of the backend in use. The bundled `Concierge::Auth::Pwd` backend implements file-based password authentication using Crypt::Passphrase; see "Built-in Authentication" below.
 
 ## FEATURES
 
-- **Secure Password Management**: Argon2 encoder with Bcrypt fallback validators
-- **User Authentication**: File-based user authentication with encrypted passwords
+- **Substitutable Backends**: swap in any backend implementing the
+  `Concierge::Auth::Base` contract (LDAP, OAuth, etc.)
 - **Token Generation**: Generate cryptographically secure tokens and UUIDs
-- **Password Utilities**: Password strength validation, random string generation
-- **File Management**: Secure user file operations with proper locking
 - **Generator Architecture**: Extensible generator system for tokens and identifiers
+- **Built-in Backend**: a password-file backend (`Concierge::Auth::Pwd`)
+  ships with this distribution — see "Built-in Authentication" below
 
 ## MODULE STRUCTURE
 
@@ -67,6 +67,29 @@ Each of the five core methods above returns a hashref: `{ success => 1, ... }`
 on success, or `{ success => 0, message => '...' }` on failure. See
 `Concierge::Auth::Base` for the full contract.
 
+## Built-in Authentication (Concierge::Auth::Pwd)
+
+`Concierge::Auth::Pwd` is the password-file backend bundled with this
+distribution — the `backend` used in the example above.
+
+- **Password Management**: Argon2 encoder (via Crypt::Passphrase) with a
+  Bcrypt fallback validator for legacy password verification
+- **File-based Authentication**: encrypted passwords stored in a plain
+  password file, never in plaintext
+- **File Locking**: proper `flock()` support for concurrent access
+- **Password Utilities**: password strength validation, on top of the
+  random string/token generators shared with all backends
+- **Flexible**: works with or without a password file (`no_file => 1`)
+  when only the generator methods are needed
+
+Password security defaults:
+- Primary encoder: Argon2 (memory-hard, resistant to GPU/ASIC attacks)
+- Fallback validator: Bcrypt (for backward compatibility)
+- Password length: 8-72 characters (bcrypt limit)
+- User ID validation: 2-32 characters, alphanumeric plus `. _ @ -`
+
+See `perldoc Concierge::Auth::Pwd` for the full backend documentation.
+
 The generator methods (`gen_random_token`, `gen_uuid`, etc.) are different:
 they follow a `wantarray` `(value)` / `(value, message)` dual-return
 convention rather than returning a hashref, so context matters:
@@ -83,32 +106,24 @@ my $token          = $auth->gen_random_token();  # scalar context: $msg discarde
 - Fcntl
 - Crypt::Passphrase
 - Crypt::PRNG
-- Time::HiRes
 - parent
 - Exporter
 - Test2::V0 (for testing)
-
-## PASSWORD SECURITY
-
-Concierge::Auth uses Crypt::Passphrase with:
-- **Primary Encoder**: Argon2 (memory-hard, resistant to GPU/ASIC attacks)
-- **Fallback Validators**: Bcrypt (for backward compatibility)
-- **Password Length**: 8-72 characters (bcrypt limit)
-- **User ID Validation**: 2-32 characters, alphanumeric plus . _ @ -
 
 ## PRODUCTION USE
 
 Concierge::Auth is actively used in production environments. Key features for production:
 
-- **File Locking**: Proper flock() support for concurrent access
-- **Secure Defaults**: Argon2 encoder with reasonable defaults
 - **Error Handling**: Comprehensive error checking and reporting
 - **Token Security**: Cryptographically secure random token generation
-- **Flexible Architecture**: Works with or without password files
+
+See "Built-in Authentication" above for production-hardening details
+specific to the bundled `Concierge::Auth::Pwd` backend (file locking,
+secure password defaults).
 
 ## INTEGRATION
 
-Concierge::Auth integrates with the Concierge ecosystem:
+Concierge::Auth also integrates with the Concierge ecosystem:
 - **Concierge::Users** - User data management
 - **Concierge::Sessions** - Session management
 

@@ -16,7 +16,6 @@ WriteMakefile(
         'Crypt::Passphrase::Argon2'  => 0,
         'Crypt::Passphrase::Bcrypt'  => 0,
         'Crypt::PRNG'      => 0,
-        'Time::HiRes'      => 0,
         'parent'           => 0,
         'Exporter'         => 0,
     },
