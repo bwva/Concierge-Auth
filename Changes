@@ -1,6 +1,16 @@
 Revision history for Concierge-Auth
 
 v0.5.2  (unreleased)
+    - BREAKING: Concierge::Auth->new's constructor key renamed from
+      backend to backend_class, to disambiguate it from the unrelated
+      "friendly name" sense of backend used elsewhere in the Concierge
+      suite (Concierge::Sessions, Concierge::Users, and the auth/
+      sessions/users blocks of a Concierge desk's build config all
+      accept a short friendly name like 'pwd'/'database'/'file' under
+      backend; Concierge::Auth's own key has always required an
+      already-resolved, fully-qualified class name, which backend_class
+      now makes explicit). Updated the two internal call sites in the
+      core Concierge repo (Concierge.pm and Desk::Setup.pm) accordingly.
     - Removed the 10 stale examples/*.pl scripts (01-basic-authentication.pl
       through 10-architecture-comparison.pl) and their coverage in
       examples/README.md: all called removed methods (checkID/checkPwd/

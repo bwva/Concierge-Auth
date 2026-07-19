@@ -47,8 +47,8 @@ cpanm Concierge::Auth
 use Concierge::Auth;
 
 my $auth = Concierge::Auth->new(
-    backend => 'Concierge::Auth::Pwd',
-    file    => '/path/to/users.passwd',
+    backend_class => 'Concierge::Auth::Pwd',
+    file          => '/path/to/users.passwd',
 );
 
 my $result = $auth->enroll($user_id, $password);
@@ -58,7 +58,7 @@ my $result = $auth->change_credentials($user_id, $new_password);
 my $result = $auth->revoke($user_id);
 
 # Generators -- work with or without a file
-# (backend => 'Concierge::Auth::Pwd', no_file => 1)
+# (backend_class => 'Concierge::Auth::Pwd', no_file => 1)
 my $token = $auth->gen_random_token();
 my $uuid  = $auth->gen_uuid();
 ```
@@ -70,7 +70,7 @@ on success, or `{ success => 0, message => '...' }` on failure. See
 ## Built-in Authentication (Concierge::Auth::Pwd)
 
 `Concierge::Auth::Pwd` is the password-file backend bundled with this
-distribution — the `backend` used in the example above.
+distribution — the `backend_class` used in the example above.
 
 - **Password Management**: Argon2 encoder (via Crypt::Passphrase) with a
   Bcrypt fallback validator for legacy password verification

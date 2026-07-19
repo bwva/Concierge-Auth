@@ -151,7 +151,7 @@ package Concierge::Auth::LDAP {
 say "=== Concierge::Auth::LDAP sketch ===";
 say "";
 say "  my \$auth = Concierge::Auth->new(";
-say "      backend       => 'Concierge::Auth::LDAP',";
+say "      backend_class => 'Concierge::Auth::LDAP',";
 say "      host          => 'ldaps://directory.example.com',";
 say "      bind_dn       => 'cn=service,dc=example,dc=com',";
 say "      bind_password => \$service_password,";
