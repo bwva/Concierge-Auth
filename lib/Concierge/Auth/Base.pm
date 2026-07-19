@@ -103,15 +103,15 @@ object internally.
 
 =head2 The Generators Guarantee
 
-Concierge also relies on whatever object ends up as C<$concierge-E<gt>{auth}>
-for identifier generation that has nothing to do with authentication:
-visitors and guests (see C<admit_visitor>/C<checkin_guest> in
-L<Concierge>) are never authenticated -- they are simply assigned a
-generated identifier for cookie/session purposes, with no credential
-involved at all. That capability (C<gen_uuid>, C<gen_random_id>,
-C<gen_random_token>, C<gen_random_string>, C<gen_word_phrase>, and the
-deprecated aliases C<gen_token>/C<gen_crypt_token>) is therefore
-independent of the five-method contract above.
+Concierge also relies on its configured authentication class's object
+to generate identifiers for other uses not connected to
+authentication. For example, applications might not authenticate
+visitors or guests (see C<admit_visitor>/C<checkin_guest> in
+L<Concierge>) -- they are simply assigned a generated identifier for
+cookie/session purposes, with no credential involved at all. That
+capability (C<gen_uuid>, C<gen_random_id>, C<gen_random_token>,
+C<gen_random_string>, C<gen_word_phrase>) is therefore independent of
+the five-method contract above.
 
 Unlike the five required methods, this guarantee is satisfied with a
 working I<default> rather than a die-stub: C<Concierge::Auth::Base>
