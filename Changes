@@ -1,6 +1,6 @@
 Revision history for Concierge-Auth
 
-v0.5.2  (unreleased)
+v0.5.2  2026-07-23
     - BREAKING: Concierge::Auth->new's constructor key renamed from
       backend to backend_class, to disambiguate it from the unrelated
       "friendly name" sense of backend used elsewhere in the Concierge

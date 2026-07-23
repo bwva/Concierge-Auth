@@ -4,7 +4,7 @@ Concierge authorization framework - production-ready authentication and authoriz
 
 ## VERSION
 
-v0.5.1
+v0.5.2
 
 ## DESCRIPTION
 

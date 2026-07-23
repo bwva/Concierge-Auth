@@ -1,4 +1,4 @@
-package Concierge::Auth::Base v0.5.1;
+package Concierge::Auth::Base v0.5.2;
 use v5.36;
 
 # ABSTRACT: Base class / contract for Concierge::Auth backends
@@ -52,7 +52,7 @@ Concierge::Auth::Base - Base class / contract for Concierge::Auth backends
 
 =head1 VERSION
 
-v0.5.1
+v0.5.2
 
 =head1 SYNOPSIS
 
